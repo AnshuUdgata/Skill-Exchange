@@ -1,0 +1,68 @@
+const skillsData = [
+  {
+    id: 1,
+    title: "C++ Basics",
+    category: "Programming",
+    offeredBy: "Rahul",
+    mode: "Online",
+    description: "I can help beginners understand C++ basics, control flow, and simple data structures.",
+  },
+  {
+    id: 2,
+    title: "Poster Design",
+    category: "Design",
+    offeredBy: "Aman",
+    mode: "Offline",
+    description: "I can teach Canva and basic poster design for events, clubs, and presentations.",
+  },
+  {
+    id: 3,
+    title: "Calculus Review",
+    category: "Academics",
+    offeredBy: "Priya",
+    mode: "Online",
+    description: "Need help with derivatives and integrals? I offer guided problem-solving sessions.",
+  },
+  {
+    id: 4,
+    title: "Public Speaking",
+    category: "Communication",
+    offeredBy: "Sahil",
+    mode: "Offline",
+    description: "Practice speeches, presentations, and confidence building with peer feedback.",
+  },
+  {
+    id: 5,
+    title: "React Web Apps",
+    category: "Web Development",
+    offeredBy: "Neha",
+    mode: "Online",
+    description: "Learn how to build responsive React applications with hooks and components.",
+  },
+  {
+    id: 6,
+    title: "Interview Prep",
+    category: "Other",
+    offeredBy: "Ankit",
+    mode: "Both",
+    description: "Get help preparing for interviews, resumes, and campus placement rounds.",
+  },
+  {
+    id: 7,
+    title: "UX Fundamentals",
+    category: "Design",
+    offeredBy: "Maya",
+    mode: "Online",
+    description: "Learn the basics of user experience, wireframing, and interface design principles.",
+  },
+  {
+    id: 8,
+    title: "Data Structures",
+    category: "Programming",
+    offeredBy: "Rohan",
+    mode: "Offline",
+    description: "Hands-on help with arrays, linked lists, stacks, queues, and complexity analysis.",
+  },
+];
+
+export default skillsData;
