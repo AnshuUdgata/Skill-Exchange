@@ -443,7 +443,7 @@ Campus Skill Exchange Platform is a full-stack MERN peer-learning platform where
 
 ## Author
 
-Developed by Md Yahiya Ariz.
+Developed by Anshuman Udgata.
 
 ---
 
