@@ -1,27 +1,20 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useMemo, useState } from "react";
 
-const AuthContext = createContext();
+const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
-
-  useEffect(() => {
-    const savedToken = localStorage.getItem("token");
+  const [token, setToken] = useState(() => localStorage.getItem("token") || null);
+  const [user, setUser] = useState(() => {
     const savedUser = localStorage.getItem("user");
-
-    if (savedToken) {
-      setToken(savedToken);
-    }
-
     if (savedUser) {
       try {
-        setUser(JSON.parse(savedUser));
+        return JSON.parse(savedUser);
       } catch {
-        setUser(null);
+        return null;
       }
     }
-  }, []);
+    return null;
+  });
 
   const login = ({ token: newToken, user: newUser }) => {
     localStorage.setItem("token", newToken);
@@ -50,6 +43,8 @@ export function AuthProvider({ children }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
+// Custom hook to consume AuthContext
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   return useContext(AuthContext);
 }

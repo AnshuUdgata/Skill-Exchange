@@ -153,22 +153,7 @@ campus-skill-exchange/
 │
 ├── .gitignore
 └── README.md
-```
 
----
-
-## Installation and Setup
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/mdyahiyaariz/campus-skill-exchange.git
-cd campus-skill-exchange
-```
-
-Replace `YOUR_USERNAME` with your GitHub username.
-
----
 
 ## Backend Setup
 

@@ -1,6 +1,13 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import API from "../api/api";
+import {
+  BookOpen,
+  ArrowLeft,
+  Check,
+  AlertCircle,
+  Sparkles,
+} from "lucide-react";
 
 function AddSkill() {
   const navigate = useNavigate();
@@ -26,16 +33,15 @@ function AddSkill() {
     setError("");
     setSuccess("");
 
-    if (!formData.title || !formData.description) {
-      setError("Please enter title and description.");
+    if (!formData.title.trim() || !formData.description.trim()) {
+      setError("Please provide a title and a detailed description.");
       return;
     }
 
     setLoading(true);
     try {
       await API.post("/skills", formData);
-      setSuccess("Skill added successfully.");
-      setFormData({ title: "", category: "Programming", description: "", mode: "Online" });
+      setSuccess("Skill published successfully! Redirecting to marketplace...");
       setTimeout(() => navigate("/skills"), 1200);
     } catch (err) {
       setError(err.response?.data?.error || "Unable to add skill.");
@@ -45,73 +51,114 @@ function AddSkill() {
   }
 
   return (
-    <div className="form-page">
-      <div className="form-card">
-        <h1>Add Skill</h1>
-        <p>Share a skill you can teach and let learners request a session.</p>
+    <div className="form-page-container">
+      <div style={{ marginBottom: "1rem" }}>
+        <Link to="/skills" className="btn btn-secondary btn-small">
+          <ArrowLeft size={14} />
+          <span>Back to Marketplace</span>
+        </Link>
+      </div>
 
-        <form onSubmit={handleSubmit} noValidate>
-          <label className="form-group">
-            <span>Title</span>
+      <div className="card form-sheet-card">
+        <div className="form-sheet-header">
+          <div className="form-sheet-icon-wrap">
+            <BookOpen size={24} />
+          </div>
+          <div>
+            <h1 className="form-sheet-title">Offer a Skill on Campus</h1>
+            <p className="form-sheet-desc">
+              List a topic you can teach or mentor fellow students in, from algorithms to design or course prep.
+            </p>
+          </div>
+        </div>
+
+        {error && (
+          <div className="alert alert-error">
+            <AlertCircle size={18} />
+            <span>{error}</span>
+          </div>
+        )}
+        {success && (
+          <div className="alert alert-success">
+            <Check size={18} />
+            <span>{success}</span>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="form-sheet-body">
+          <div className="form-group">
+            <label className="form-label">
+              Skill Title <span style={{ color: "var(--rose-500)" }}>*</span>
+            </label>
             <input
-              className="input-field"
               type="text"
+              required
               name="title"
+              className="input-field"
               value={formData.title}
               onChange={handleChange}
-              placeholder="Skill title"
+              placeholder="e.g. Intro to React & Hooks, or Calculus II Midterm Prep"
             />
-          </label>
+            <small className="form-hint">Make it specific and clear so classmates know exactly what they will learn.</small>
+          </div>
 
-          <label className="form-group">
-            <span>Category</span>
-            <select
-              className="select-field"
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-            >
-              <option value="Programming">Programming</option>
-              <option value="Design">Design</option>
-              <option value="Academics">Academics</option>
-              <option value="Communication">Communication</option>
-              <option value="Web Development">Web Development</option>
-              <option value="Other">Other</option>
-            </select>
-          </label>
+          <div className="form-row-2col">
+            <div className="form-group">
+              <label className="form-label">Category</label>
+              <select
+                name="category"
+                className="select-field"
+                value={formData.category}
+                onChange={handleChange}
+              >
+                <option value="Programming">Programming</option>
+                <option value="Web Development">Web Development</option>
+                <option value="Design">Design</option>
+                <option value="Academics">Academics</option>
+                <option value="Communication">Communication</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
 
-          <label className="form-group">
-            <span>Description</span>
+            <div className="form-group">
+              <label className="form-label">Teaching Mode</label>
+              <select
+                name="mode"
+                className="select-field"
+                value={formData.mode}
+                onChange={handleChange}
+              >
+                <option value="Online">Online (Google Meet, Zoom)</option>
+                <option value="Offline">Offline (Campus Study Rooms, Labs)</option>
+                <option value="Both">Both (Flexible)</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">
+              Description & Learning Goals <span style={{ color: "var(--rose-500)" }}>*</span>
+            </label>
             <textarea
-              className="input-field"
               name="description"
+              required
+              rows={5}
+              className="textarea-field"
               value={formData.description}
               onChange={handleChange}
-              rows="5"
-              placeholder="Describe the skill and what you can teach"
+              placeholder="Outline what you will cover, prerequisites, and what kind of exercises or projects you will do together..."
             />
-          </label>
+          </div>
 
-          <label className="form-group">
-            <span>Mode</span>
-            <select
-              className="select-field"
-              name="mode"
-              value={formData.mode}
-              onChange={handleChange}
-            >
-              <option value="Online">Online</option>
-              <option value="Offline">Offline</option>
-              <option value="Both">Both</option>
-            </select>
-          </label>
-
-          {error && <div className="error-text">{error}</div>}
-          {success && <div className="success-text">{success}</div>}
-
-          <button className="btn btn-primary" type="submit" disabled={loading}>
-            {loading ? "Adding skill..." : "Add Skill"}
-          </button>
+          <div className="form-actions-footer">
+            <Link to="/skills" className="btn btn-secondary">
+              Cancel
+            </Link>
+            <button type="submit" className="btn btn-primary" disabled={loading}>
+              <Sparkles size={16} />
+              <span>{loading ? "Publishing..." : "Publish Skill"}</span>
+            </button>
+          </div>
         </form>
       </div>
     </div>

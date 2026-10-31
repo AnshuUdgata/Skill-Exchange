@@ -1,10 +1,21 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import API from "../api/api";
+import {
+  GraduationCap,
+  Mail,
+  Star,
+  BookOpen,
+  ArrowLeft,
+  AlertCircle,
+  Video,
+  MapPin,
+  Globe,
+} from "lucide-react";
 
 function Instructor() {
   const { id } = useParams();
-  const [instructor, setInstructor] = useState(null);
+  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -14,9 +25,9 @@ function Instructor() {
       setError("");
       try {
         const response = await API.get(`/users/${id}`);
-        setInstructor(response.data);
+        setData(response.data);
       } catch (err) {
-        setError(err.response?.data?.error || "Unable to load instructor.");
+        setError(err.response?.data?.error || "Unable to load student instructor profile.");
       } finally {
         setLoading(false);
       }
@@ -24,84 +35,158 @@ function Instructor() {
     fetchInstructor();
   }, [id]);
 
+  const getInitials = (name) => {
+    if (!name) return "U";
+    return name
+      .split(" ")
+      .map((part) => part[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  const getModeIcon = (mode) => {
+    switch (mode) {
+      case "Online":
+        return <Video size={13} />;
+      case "Offline":
+        return <MapPin size={13} />;
+      default:
+        return <Globe size={13} />;
+    }
+  };
+
   if (loading) {
-    return <div className="empty-state">Loading instructor profile...</div>;
+    return (
+      <div className="loading-container" style={{ minHeight: "50vh" }}>
+        <div className="spinner" />
+        <p>Loading instructor profile...</p>
+      </div>
+    );
   }
 
-  if (error) {
-    return <div className="error-text">{error}</div>;
+  if (error || !data?.success) {
+    return (
+      <div className="profile-page-container">
+        <div className="alert alert-error">
+          <AlertCircle size={18} />
+          <span>{error || "Instructor profile not found."}</span>
+        </div>
+        <Link to="/skills" className="btn btn-secondary btn-small">
+          <ArrowLeft size={14} />
+          <span>Back to Skills Marketplace</span>
+        </Link>
+      </div>
+    );
   }
 
-  if (!instructor?.success) {
-    return <div className="empty-state">Instructor not found.</div>;
-  }
-
-  const { instructor: user, overallRating, totalReviews, skills } = instructor;
+  const { instructor: u, overallRating, totalReviews, skills } = data;
 
   return (
-    <div className="profile-page">
-      <div className="page-header">
-        <h1>{user.name}</h1>
-        <p>Instructor profile and ratings for all skills.</p>
+    <div className="profile-page-container">
+      {/* Back button */}
+      <div style={{ marginBottom: "1rem" }}>
+        <Link to="/skills" className="btn btn-secondary btn-small">
+          <ArrowLeft size={14} />
+          <span>Back to Skills</span>
+        </Link>
       </div>
 
-      <section className="profile-section instructor-hero">
-        <div className="profile-info-card">
-          <div className="profile-card-top">
-            <img
-              className="profile-photo"
-              src={user.photo || "https://via.placeholder.com/120?text=Profile"}
-              alt={user.name}
-            />
-            <div>
-              <h2>{user.name}</h2>
-              <p>{user.experience || "No experience details provided yet."}</p>
+      {/* Instructor Banner Card */}
+      <div className="card profile-header-hero-card">
+        <div className="profile-hero-banner-strip" />
+        <div className="profile-hero-content-wrap">
+          <div className="profile-hero-avatar-box">
+            {u.photo ? (
+              <img src={u.photo} alt={u.name} className="profile-hero-avatar" />
+            ) : (
+              <div className="profile-hero-avatar-fallback">{getInitials(u.name)}</div>
+            )}
+          </div>
+
+          <div className="profile-hero-text">
+            <div className="profile-hero-title-row">
+              <h1 className="profile-hero-name">{u.name}</h1>
+              <span className="badge badge-primary">
+                <GraduationCap size={13} />
+                {u.branch} {u.year ? `· Year ${u.year}` : ""}
+              </span>
+            </div>
+            <p className="profile-hero-email">
+              <Mail size={13} style={{ display: "inline", marginRight: "0.3rem" }} />
+              {u.email}
+            </p>
+            {u.experience && (
+              <p className="profile-hero-bio">"{u.experience}"</p>
+            )}
+          </div>
+
+          <div className="profile-hero-stats-box">
+            <div className="hero-stat-pill">
+              <Star size={16} fill="#f59e0b" color="#f59e0b" />
+              <div>
+                <strong>{overallRating ? Number(overallRating).toFixed(1) : "New"} / 5</strong>
+                <small>{totalReviews} {totalReviews === 1 ? "review" : "reviews"}</small>
+              </div>
+            </div>
+            <div className="hero-stat-pill">
+              <BookOpen size={16} style={{ color: "var(--primary-600)" }} />
+              <div>
+                <strong>{skills.length}</strong>
+                <small>{skills.length === 1 ? "Skill taught" : "Skills taught"}</small>
+              </div>
             </div>
           </div>
-          <div className="profile-row">
-            <span>Email</span>
-            <strong>{user.email}</strong>
-          </div>
-          <div className="profile-row">
-            <span>Branch</span>
-            <strong>{user.branch}</strong>
-          </div>
-          <div className="profile-row">
-            <span>Year</span>
-            <strong>{user.year}</strong>
-          </div>
-          <div className="profile-row">
-            <span>Overall Rating</span>
-            <strong>{overallRating ? overallRating.toFixed(1) : "—"} / 5</strong>
-          </div>
-          <div className="profile-row">
-            <span>Total Reviews</span>
-            <strong>{totalReviews}</strong>
-          </div>
         </div>
-      </section>
+      </div>
 
-      <section className="profile-section">
-        <div className="section-heading">
-          <p>Skill ratings</p>
-          <h2>Average rating for each skill taught.</h2>
+      {/* Skills Offered By Instructor */}
+      <div className="card profile-content-section-card">
+        <div className="card-header-styled">
+          <h2 className="section-card-title">Skills Offered by {u.name}</h2>
+          <p className="section-card-desc">
+            Browse skills taught by this mentor. Request a session directly through the marketplace.
+          </p>
         </div>
-        <div className="review-list">
-          {skills.length > 0 ? (
-            skills.map((skill) => (
-              <div key={skill._id} className="review-card">
-                <div className="review-header">
-                  <strong>{skill.title}</strong>
-                  <span>{skill.avgRating ? skill.avgRating.toFixed(1) : "—"} / 5</span>
+
+        {skills.length > 0 ? (
+          <div className="skills-catalog-grid" style={{ marginTop: "1.25rem" }}>
+            {skills.map((skill) => (
+              <div key={skill._id} className="card skill-card-modern">
+                <div className="skill-card-top-row">
+                  <span className="badge badge-primary">{skill.category}</span>
+                  <span className="badge badge-neutral skill-mode-badge">
+                    {getModeIcon(skill.mode)}
+                    <span>{skill.mode}</span>
+                  </span>
                 </div>
-                <p>{skill.category} · {skill.mode} · {skill.reviewsCount} reviews</p>
+                <div className="skill-card-body-content">
+                  <h3 className="skill-card-title">{skill.title}</h3>
+                </div>
+                <div className="skill-card-footer-info" style={{ marginTop: "auto", borderTop: "1px solid var(--border-subtle)", paddingTop: "0.75rem" }}>
+                  <div className="skill-rating-inline">
+                    <Star size={14} fill="#f59e0b" color="#f59e0b" />
+                    <strong>{skill.avgRating ? Number(skill.avgRating).toFixed(1) : "—"} / 5</strong>
+                    <span className="reviews-count-muted">
+                      ({skill.reviewsCount || 0} {skill.reviewsCount === 1 ? "review" : "reviews"})
+                    </span>
+                  </div>
+                  <Link
+                    to={`/skills?search=${encodeURIComponent(skill.title)}`}
+                    className="btn btn-primary btn-small"
+                  >
+                    <span>Request Session</span>
+                  </Link>
+                </div>
               </div>
-            ))
-          ) : (
-            <div className="empty-state">This instructor has not published any skills yet.</div>
-          )}
-        </div>
-      </section>
+            ))}
+          </div>
+        ) : (
+          <div className="empty-state">
+            <p>This instructor has not published any skills yet.</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
